@@ -12,7 +12,7 @@ public class ContaBancaria
         decimal _saldo = 0;
             foreach (var item in todasTransacoes)
             {   
-                _saldo = item.Valor;
+                _saldo = _saldo + item.Valor;
             }
         return _saldo;
         }
@@ -35,14 +35,23 @@ public class ContaBancaria
     public void FazerDeposito(decimal valor, DateTime data, string observacao)
     {
         if (valor <= 0)
-        throw new ArgumentException(nameof(valor), "Valor do deposito deve ser positivo");
+            throw new ArgumentException(nameof(valor), "Valor do deposito deve ser positivo");
     
-        var deposito = new Transacao(valor, data, observacao);
-        todasTransacoes.Add(deposito);
+        var transacaoDeDeposito = new Transacao(valor, data, observacao);
+        todasTransacoes.Add(transacaoDeDeposito);
     }
 
     public void FazerSaque(decimal valor, DateTime data, string observacao)
     {
-        //TODO: PO saque não pode resultar em um saldo negativo
+        if(valor <= 0)
+            throw new ArgumentOutOfRangeException(nameof(valor), "Valor do saque deve ser positivo.");
+
+        if(Saldo - valor <=0)
+        {
+            throw new InvalidOperationException("Não existe saldo suficioente para o saque desejado.");
+        }    
+
+        var transacaoDeSaque = new Transacao(-valor, data, observacao);
+        todasTransacoes.Add(transacaoDeSaque);
     }
 }
